@@ -1,0 +1,86 @@
+name: espocrm-prod
+
+services:
+  espocrm-db:
+    image: ${MARIADB_IMAGE}
+    container_name: espocrm-db
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${ESPOCRM_DATABASE_NAME}
+      MARIADB_USER: ${ESPOCRM_DATABASE_USER}
+      MARIADB_PASSWORD: ${ESPOCRM_DATABASE_PASSWORD}
+    volumes:
+      - espocrm-db:/var/lib/mysql
+    restart: always
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 20s
+      start_period: 30s
+      timeout: 10s
+      retries: 5
+
+  espocrm:
+    image: ${ESPOCRM_IMAGE}
+    container_name: espocrm
+    environment:
+      ESPOCRM_DATABASE_PLATFORM: Mysql
+      ESPOCRM_DATABASE_HOST: espocrm-db
+      ESPOCRM_DATABASE_NAME: ${ESPOCRM_DATABASE_NAME}
+      ESPOCRM_DATABASE_USER: ${ESPOCRM_DATABASE_USER}
+      ESPOCRM_DATABASE_PASSWORD: ${ESPOCRM_DATABASE_PASSWORD}
+      ESPOCRM_ADMIN_USERNAME: ${ESPOCRM_ADMIN_USERNAME}
+      ESPOCRM_ADMIN_PASSWORD: ${ESPOCRM_ADMIN_PASSWORD}
+      ESPOCRM_SITE_URL: ${ESPOCRM_SITE_URL}
+      ESPOCRM_CONFIG_SITE_URL: ${ESPOCRM_SITE_URL}
+      ESPOCRM_CONFIG_USE_WEB_SOCKET: "true"
+      ESPOCRM_CONFIG_WEB_SOCKET_URL: ${ESPOCRM_WEB_SOCKET_URL}
+      ESPOCRM_CONFIG_WEB_SOCKET_ZERO_M_Q_SUBMISSION_DSN: "tcp://espocrm-websocket:7777"
+    volumes:
+      - espocrm:/var/www/html
+    restart: always
+    depends_on:
+      espocrm-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "test", "-f", "/var/www/html/data/config.php"]
+      interval: 5s
+      start_period: 120s
+      timeout: 5s
+      retries: 30
+    ports:
+      - "${ESPOCRM_HTTP_PORT}:80"
+
+  espocrm-daemon:
+    image: ${ESPOCRM_IMAGE}
+    container_name: espocrm-daemon
+    environment:
+      ESPOCRM_CONFIG_WEB_SOCKET_ZERO_M_Q_SUBMISSION_DSN: "tcp://espocrm-websocket:7777"
+    volumes:
+      - espocrm:/var/www/html
+    restart: always
+    depends_on:
+      espocrm:
+        condition: service_healthy
+    entrypoint: docker-daemon.sh
+
+  espocrm-websocket:
+    image: ${ESPOCRM_IMAGE}
+    container_name: espocrm-websocket
+    environment:
+      ESPOCRM_CONFIG_USE_WEB_SOCKET: "true"
+      ESPOCRM_CONFIG_WEB_SOCKET_URL: ${ESPOCRM_WEB_SOCKET_URL}
+      ESPOCRM_CONFIG_WEB_SOCKET_ZERO_M_Q_SUBSCRIBER_DSN: "tcp://*:7777"
+      ESPOCRM_CONFIG_WEB_SOCKET_ZERO_M_Q_SUBMISSION_DSN: "tcp://espocrm-websocket:7777"
+    volumes:
+      - espocrm:/var/www/html
+    restart: always
+    depends_on:
+      espocrm:
+        condition: service_healthy
+    entrypoint: docker-websocket.sh
+    ports:
+      - "${ESPOCRM_WEBSOCKET_PORT}:8080"
+
+volumes:
+  espocrm-db:
+  espocrm:
