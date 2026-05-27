@@ -161,12 +161,32 @@ ESPOCRM_SITE_URL=http://10.0.2.7
 ESPOCRM_WEB_SOCKET_URL=ws://10.0.2.7:8081
 ```
 
-Обязательно заменить пароли:
+Обязательно заменить пароли. Пароли писать в одинарных кавычках:
 
 ```env
-ESPOCRM_DATABASE_PASSWORD=CHANGE_ME_LONG_RANDOM_DB_PASSWORD
-MARIADB_ROOT_PASSWORD=CHANGE_ME_LONG_RANDOM_ROOT_PASSWORD
-ESPOCRM_ADMIN_PASSWORD=CHANGE_ME_LONG_RANDOM_ADMIN_PASSWORD
+ESPOCRM_DATABASE_PASSWORD='CHANGE_ME_LONG_RANDOM_DB_PASSWORD'
+MARIADB_ROOT_PASSWORD='CHANGE_ME_LONG_RANDOM_ROOT_PASSWORD'
+ESPOCRM_ADMIN_PASSWORD='CHANGE_ME_LONG_RANDOM_ADMIN_PASSWORD'
+```
+
+Почему так: Docker Compose применяет подстановку переменных к значениям без кавычек и к значениям в двойных кавычках. Символ `$` в пароле может быть воспринят как начало переменной. Одинарные кавычки передают значение буквально.
+
+Нельзя:
+
+```env
+ESPOCRM_DATABASE_PASSWORD=P@ss$word2026
+```
+
+Можно:
+
+```env
+ESPOCRM_DATABASE_PASSWORD='P@ss$word2026'
+```
+
+Для простого и надёжного варианта можно генерировать пароли без спецсимволов:
+
+```bash
+openssl rand -hex 32
 ```
 
 `ESPOCRM_ADMIN_PASSWORD` используется только при первой установке на пустой том Docker. Если EspoCRM уже установлена, изменение этого значения в `.env.prod` не меняет пароль существующего администратора.

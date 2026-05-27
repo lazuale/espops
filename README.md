@@ -66,13 +66,15 @@ nano .env.prod
 chmod 600 .env.prod
 ```
 
-Обязательно заменить пароли:
+Обязательно заменить пароли. Пароли писать в одинарных кавычках:
 
 ```env
-ESPOCRM_DATABASE_PASSWORD=CHANGE_ME_LONG_RANDOM_DB_PASSWORD
-MARIADB_ROOT_PASSWORD=CHANGE_ME_LONG_RANDOM_ROOT_PASSWORD
-ESPOCRM_ADMIN_PASSWORD=CHANGE_ME_LONG_RANDOM_ADMIN_PASSWORD
+ESPOCRM_DATABASE_PASSWORD='CHANGE_ME_LONG_RANDOM_DB_PASSWORD'
+MARIADB_ROOT_PASSWORD='CHANGE_ME_LONG_RANDOM_ROOT_PASSWORD'
+ESPOCRM_ADMIN_PASSWORD='CHANGE_ME_LONG_RANDOM_ADMIN_PASSWORD'
 ```
+
+Такой формат нужен, чтобы символ `$` и другие спецсимволы в пароле не сломали подстановку переменных Docker Compose.
 
 Проверить конфигурацию:
 
