@@ -1,0 +1,8 @@
+.env.prod
+.env.dev
+backups/
+restore-tmp/
+*.tar.gz
+*.sql
+*.log
+.DS_Store
