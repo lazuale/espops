@@ -37,11 +37,19 @@ sudo systemctl enable --now docker
 sudo usermod -aG docker "$USER"
 ```
 
-Установить Git:
+Установить Git и cron для автоматических резервных копий:
 
 ```bash
 sudo apt update
-sudo apt install -y git
+sudo apt install -y git cron
+sudo systemctl enable --now cron
+```
+
+Проверить, что `crontab` доступен:
+
+```bash
+command -v crontab
+systemctl status cron --no-pager
 ```
 
 Для других дистрибутивов и для установки по официальному репозиторию (рекомендуется для постоянной эксплуатации) смотрите официальную документацию: `https://docs.docker.com/engine/install/`.
@@ -55,6 +63,7 @@ sudo apt install -y git
 | Docker | `docker --version` | выводится версия Docker |
 | Docker Compose plugin | `docker compose version` | выводится версия Compose |
 | Git | `git --version` | выводится версия Git |
+| Cron | `command -v crontab` | выводится путь к `crontab` |
 | Docker без sudo | `docker ps` | команда работает без `sudo` и без ошибки прав |
 | Место на диске | `df -h` | достаточно места на разделе с Docker |
 | IP `10.0.2.7` на сервере | `ip addr \| grep 10.0.2.7` | IP назначен серверу |
