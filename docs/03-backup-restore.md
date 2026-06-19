@@ -73,6 +73,20 @@ tar tzf backups/YYYY-MM-DD_HHMMSS.tar.gz
 
 Для ежедневной локальной копии можно использовать cron. Локальная копия полезна для быстрого отката, но она не защищает от потери самого сервера. Важные архивы нужно копировать во внешнее защищённое место.
 
+Перед настройкой проверьте, что `crontab` установлен:
+
+```bash
+command -v crontab
+```
+
+Если команда ничего не вывела, установите cron:
+
+```bash
+sudo apt update
+sudo apt install -y cron
+sudo systemctl enable --now cron
+```
+
 Открыть cron текущего пользователя:
 
 ```bash
@@ -84,6 +98,8 @@ crontab -e
 ```cron
 0 1 * * * cd /opt/espocrm && mkdir -p backups && bash ./scripts/backup-docker-container.sh espocrm ./backups >> ./backups/backup.log 2>&1
 ```
+
+Слово `cron` в блоке выше — это только тип подсветки Markdown. В терминал его вводить не нужно.
 
 Проверить список заданий:
 
