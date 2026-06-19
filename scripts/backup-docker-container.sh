@@ -84,9 +84,10 @@ fi
 # --- Prepare temp dir and archive name ---
 
 BACKUP_ARCHIVE_NAME="$(date +'%Y-%m-%d_%H%M%S').tar.gz"
-TEMP_DIR="$BACKUP_PATH/espocrm_backup_tmp"
+TEMP_DIR="$(mktemp -d "$BACKUP_PATH/espocrm_backup_tmp.XXXXXX")" \
+    || printExitError "Unable to create temporary backup directory"
 
-mkdir -p "$TEMP_DIR"
+trap 'rm -rf "$TEMP_DIR"' EXIT
 
 # --- Database backup ---
 
@@ -129,6 +130,7 @@ tar czf "$BACKUP_PATH/$BACKUP_ARCHIVE_NAME" -C "$TEMP_DIR" .
 # --- Cleanup ---
 
 rm -rf "$TEMP_DIR"
+trap - EXIT
 
 echo ""
 echo "Backup created at '$BACKUP_PATH/$BACKUP_ARCHIVE_NAME'."
