@@ -14,8 +14,8 @@
 |---|---|
 | Файл настроек | `.env.dev` |
 | Compose-файл | `docker-compose.dev.yml` |
-| Веб-адрес | `http://localhost:8080` |
-| WebSocket | `ws://localhost:8083` |
+| Веб-адрес | `http://10.0.2.7:8080` |
+| WebSocket | `ws://10.0.2.7:8083` |
 
 Тестовый стенд рассчитан на работу на том же сервере одновременно с рабочим. Чтобы они не конфликтовали, в `.env.dev` используются другие порты, чем в `.env.prod`: веб-порт `8080` вместо `80` и WebSocket-порт `8083` вместо `8081`. Не копируйте порты из `.env.prod` в `.env.dev` — иначе оба стенда попытаются занять один и тот же порт.
 
@@ -46,24 +46,19 @@ docker compose --env-file .env.dev -f docker-compose.dev.yml up -d
 docker compose --env-file .env.dev -f docker-compose.dev.yml ps
 ```
 
-Открыть:
+Открыть с рабочего компьютера:
+
+```text
+http://10.0.2.7:8080
+```
+
+`localhost` использовать только если открываете dev прямо с самого сервера:
 
 ```text
 http://localhost:8080
 ```
 
-Если тестовый стенд нужен с другого компьютера, заменить `localhost` в `.env.dev` на IP сервера:
-
-```env
-ESPOCRM_SITE_URL=http://10.0.2.7:8080
-ESPOCRM_WEB_SOCKET_URL=ws://10.0.2.7:8083
-```
-
-После изменения `.env.dev` применить настройки:
-
-```bash
-docker compose --env-file .env.dev -f docker-compose.dev.yml up -d
-```
+Для рабочих мест по сети используется адрес `http://10.0.2.7:8080`.
 
 ## 2. Контейнеры и тома тестового стенда
 

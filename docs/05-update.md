@@ -73,7 +73,7 @@ curl -I http://10.0.2.7
 Пример:
 
 ```env
-ESPOCRM_IMAGE=espocrm/espocrm:9.3.7-apache-trixie
+ESPOCRM_IMAGE=espocrm/espocrm:9.3.8-apache-trixie
 MARIADB_IMAGE=mariadb:11.4.11-noble
 ```
 
